@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Mail } from "lucide-react";
 
 export const WaitlistForm = () => {
@@ -15,21 +16,41 @@ export const WaitlistForm = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([{ email }]);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message.includes('duplicate') 
+            ? "This email is already on our waitlist!" 
+            : "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "¡Bienvenido a la lista de espera!",
+          description: "Te notificaremos cuando Travel Cuba esté disponible.",
+        });
+        setEmail("");
+      }
+    } catch (error) {
       toast({
-        title: "¡Bienvenido a la lista de espera!",
-        description: "Te notificaremos cuando Travel Cuba esté disponible.",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
       });
-      setEmail("");
-      setIsLoading(false);
-    }, 1000);
+    }
+    
+    setIsLoading(false);
   };
 
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border shadow-soft">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-foreground mb-2">
+        <h3 className="text-2xl font-display font-bold text-foreground mb-2">
           Join the Waitlist
         </h3>
         <p className="text-muted-foreground">

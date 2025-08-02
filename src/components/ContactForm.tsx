@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Mail, User, Building2 } from "lucide-react";
 
 export const ContactForm = () => {
@@ -21,15 +22,38 @@ export const ContactForm = () => {
 
     setIsLoading(true);
     
-    // Simulate sending email to localcoinapp@gmail.com
-    setTimeout(() => {
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          business: formData.business || null,
+          message: formData.message
+        }]);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "¡Mensaje Enviado!",
+          description: "Te contactaremos pronto sobre oportunidades de colaboración.",
+        });
+        setFormData({ name: "", email: "", business: "", message: "" });
+      }
+    } catch (error) {
       toast({
-        title: "Message Sent!",
-        description: "We'll contact you soon about merchant partnership opportunities.",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
       });
-      setFormData({ name: "", email: "", business: "", message: "" });
-      setIsLoading(false);
-    }, 1000);
+    }
+    
+    setIsLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -42,11 +66,11 @@ export const ContactForm = () => {
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border shadow-soft">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-foreground mb-2">
-          Partner With Us
+        <h3 className="text-2xl font-bold text-foreground mb-2 font-display">
+          Únete Como Socio
         </h3>
         <p className="text-muted-foreground">
-          Connect your local business with travelers
+          Conecta tu negocio local con viajeros
         </p>
       </div>
       
@@ -56,7 +80,7 @@ export const ContactForm = () => {
           <Input
             type="text"
             name="name"
-            placeholder="Your name"
+            placeholder="Tu nombre"
             value={formData.name}
             onChange={handleChange}
             className="pl-10"
@@ -69,7 +93,7 @@ export const ContactForm = () => {
           <Input
             type="email"
             name="email"
-            placeholder="Email address"
+            placeholder="Correo electrónico"
             value={formData.email}
             onChange={handleChange}
             className="pl-10"
@@ -82,7 +106,7 @@ export const ContactForm = () => {
           <Input
             type="text"
             name="business"
-            placeholder="Business name (optional)"
+            placeholder="Nombre del negocio (opcional)"
             value={formData.business}
             onChange={handleChange}
             className="pl-10"
@@ -91,7 +115,7 @@ export const ContactForm = () => {
         
         <Textarea
           name="message"
-          placeholder="Tell us about your business and how you'd like to partner with Travel Cuba..."
+          placeholder="Cuéntanos sobre tu negocio y cómo te gustaría colaborar con Travel Cuba..."
           value={formData.message}
           onChange={handleChange}
           rows={4}
@@ -105,7 +129,7 @@ export const ContactForm = () => {
           className="w-full" 
           disabled={isLoading}
         >
-          {isLoading ? "Sending..." : "Send Message"}
+          {isLoading ? "Enviando..." : "Enviar Mensaje"}
         </Button>
       </form>
     </div>

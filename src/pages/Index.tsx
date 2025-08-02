@@ -34,7 +34,7 @@ const Index = () => {
         
         <div className="relative z-10 container mx-auto px-6 text-center">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-6 leading-tight">
               Discover Cuba's
               <span className="block bg-gradient-sunset bg-clip-text text-transparent">
                 Hidden Treasures
@@ -61,7 +61,7 @@ const Index = () => {
       <section className="py-20 bg-card/30">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
               Why Travel Cuba?
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -75,7 +75,7 @@ const Index = () => {
                 <div className="bg-gradient-ocean w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <MapPin className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Discover Hidden Gems</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Discover Hidden Gems</h3>
                 <p className="text-muted-foreground">
                   Find authentic restaurants, exciting events, unique tours, and local shops that only locals know about.
                 </p>
@@ -87,7 +87,7 @@ const Index = () => {
                 <div className="bg-gradient-sunset w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <MessageSquare className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Direct Communication</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Direct Communication</h3>
                 <p className="text-muted-foreground">
                   Chat directly with merchants in multiple languages. AI features break down language barriers effortlessly.
                 </p>
@@ -99,7 +99,7 @@ const Index = () => {
                 <div className="bg-gradient-tropical w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <CreditCard className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Smart Payments</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Smart Payments</h3>
                 <p className="text-muted-foreground">
                   Save on transaction fees, avoid ATM hassles, and enjoy secure prepaid booking with transparent pricing.
                 </p>
@@ -111,7 +111,7 @@ const Index = () => {
                 <div className="bg-gradient-ocean w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Shield className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Safety First</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Safety First</h3>
                 <p className="text-muted-foreground">
                   Verified merchants, agreed prices, and quality assurance help you avoid scams and enjoy peace of mind.
                 </p>
@@ -123,7 +123,7 @@ const Index = () => {
                 <div className="bg-gradient-sunset w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Languages className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">AI-Powered Experience</h3>
+                <h3 className="text-xl font-display font-bold mb-3">AI-Powered Experience</h3>
                 <p className="text-muted-foreground">
                   Get personalized recommendations, instant translations, and tailored offers based on your preferences.
                 </p>
@@ -135,7 +135,7 @@ const Index = () => {
                 <div className="bg-gradient-tropical w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Support Local Communities</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Support Local Communities</h3>
                 <p className="text-muted-foreground">
                   Every booking supports locally-owned businesses and helps strengthen Cuban communities.
                 </p>
@@ -149,7 +149,7 @@ const Index = () => {
       <section className="py-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
               See Travel Cuba in Action
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -170,7 +170,7 @@ const Index = () => {
                   1
                 </div>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Discover & Search</h3>
+              <h3 className="text-2xl font-display font-bold mb-4">Discover & Search</h3>
               <p className="text-muted-foreground">
                 Browse restaurants, events, tours, and shops with smart filters and personalized recommendations.
               </p>
@@ -188,7 +188,7 @@ const Index = () => {
                   2
                 </div>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Connect & Chat</h3>
+              <h3 className="text-2xl font-display font-bold mb-4">Connect & Chat</h3>
               <p className="text-muted-foreground">
                 Chat directly with merchants, ask questions, and get personalized service in multiple languages.
               </p>
@@ -206,7 +206,7 @@ const Index = () => {
                   3
                 </div>
               </div>
-              <h3 className="text-2xl font-bold mb-4">Book & Pay Safely</h3>
+              <h3 className="text-2xl font-display font-bold mb-4">Book & Pay Safely</h3>
               <p className="text-muted-foreground">
                 Secure payments, transparent pricing, and verified merchants ensure a worry-free experience.
               </p>
@@ -219,11 +219,11 @@ const Index = () => {
       <section className="py-20 bg-gradient-ocean text-white">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              For Cuban Merchants
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
+              Para Comerciantes Cubanos
             </h2>
             <p className="text-xl mb-12 opacity-90">
-              Grow your business and connect with travelers from around the world
+              Haz crecer tu negocio y conecta con viajeros de todo el mundo
             </p>
 
             <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -231,9 +231,9 @@ const Index = () => {
                 <div className="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <Globe className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Free to Join</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Gratis Unirse</h3>
                 <p className="opacity-90">
-                  No signup fees or expensive POS systems required. Start promoting your business immediately.
+                  Sin cuotas de registro ni sistemas POS costosos. Comienza a promocionar tu negocio inmediatamente.
                 </p>
               </div>
 
@@ -241,17 +241,13 @@ const Index = () => {
                 <div className="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   <Star className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Low Commission</h3>
+                <h3 className="text-xl font-display font-bold mb-3">Comisión Baja</h3>
                 <p className="opacity-90">
-                  Pay less than other payment services with transparent, fair pricing that helps your business grow.
+                  Paga menos que otros servicios de pago con precios transparentes y justos que ayudan a crecer tu negocio.
                 </p>
               </div>
             </div>
 
-            <Button variant="sunset" size="lg" className="text-lg px-8 py-6">
-              <Store className="mr-2 h-5 w-5" />
-              Become a Partner
-            </Button>
           </div>
         </div>
       </section>
@@ -270,7 +266,7 @@ const Index = () => {
       <footer className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-4">Travel Cuba</h3>
+            <h3 className="text-2xl font-display font-bold mb-4">Travel Cuba</h3>
             <p className="mb-6 opacity-90">
               Connecting travelers and local merchants across beautiful Cuba
             </p>
