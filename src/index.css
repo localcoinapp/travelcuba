@@ -2,41 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Cuban Tropical Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors - Tropical white sands and deep ocean */
+    --background: 39 55% 97%;
+    --foreground: 200 25% 15%;
 
+    /* Card colors - Clean white with subtle warmth */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 200 25% 15%;
 
+    /* Popover colors */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 200 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep Caribbean blue */
+    --primary: 199 89% 35%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 199 89% 45%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm coral sunset */
+    --secondary: 16 85% 65%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted - Soft sandy beige */
+    --muted: 39 35% 92%;
+    --muted-foreground: 200 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Tropical turquoise */
+    --accent: 180 75% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Success - Palm green */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Destructive colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* Border and input - Light sandy tones */
+    --border: 39 25% 85%;
+    --input: 39 25% 90%;
+    --ring: 199 89% 35%;
+
+    --radius: 0.75rem;
+
+    /* Tropical gradients */
+    --gradient-sunset: linear-gradient(135deg, hsl(16 85% 65%), hsl(35 85% 70%));
+    --gradient-ocean: linear-gradient(135deg, hsl(199 89% 35%), hsl(180 75% 55%));
+    --gradient-tropical: linear-gradient(135deg, hsl(180 75% 55%), hsl(142 76% 36%));
+    
+    /* Shadows with tropical colors */
+    --shadow-soft: 0 4px 20px -4px hsl(199 89% 35% / 0.15);
+    --shadow-glow: 0 0 30px hsl(180 75% 55% / 0.3);
+    
+    /* Animation variables */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 98%;
 
