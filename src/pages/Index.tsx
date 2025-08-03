@@ -43,6 +43,7 @@ const Index = () => {
             <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
               Connect with local merchants, discover authentic experiences, and explore Cuba like never before
             </p>
+              {/*
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="sunset" size="lg" className="text-lg px-8 py-6">
                 <Smartphone className="mr-2 h-5 w-5" />
@@ -53,6 +54,7 @@ const Index = () => {
                 Partner With Us
               </Button>
             </div>
+             */}
           </div>
         </div>
       </section>
@@ -271,7 +273,7 @@ const Index = () => {
               Connecting travelers and local merchants across beautiful Cuba
             </p>
             <p className="text-sm opacity-75">
-              © 2024 Travel Cuba. All rights reserved.
+              © {new Date().getFullYear()} Travel Cuba. All rights reserved.
             </p>
           </div>
         </div>
