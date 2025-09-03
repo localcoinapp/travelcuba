@@ -64,7 +64,7 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
-              Why Travel Cuba?
+              Why Discover Cuba?
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Bridging the gap between curious travelers and passionate local merchants across Cuba
@@ -152,10 +152,10 @@ const Index = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-6">
-              See Travel Cuba in Action
+              See Discover Cuba in Action
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              From discovering local restaurants to booking unique experiences - here's how Travel Cuba works
+              From discovering local restaurants to booking unique experiences - here's how Discover Cuba works
             </p>
           </div>
 
@@ -165,7 +165,7 @@ const Index = () => {
               <div className="relative mb-6">
                 <img 
                   src={appRestaurantSearch} 
-                  alt="Search for restaurants in Travel Cuba app"
+                  alt="Search for restaurants in Discover Cuba app"
                   className="rounded-2xl shadow-soft max-w-sm mx-auto"
                 />
                 <div className="absolute -top-4 -left-4 bg-gradient-ocean text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
@@ -183,7 +183,7 @@ const Index = () => {
               <div className="relative mb-6">
                 <img 
                   src={appEventBooking} 
-                  alt="Book events and chat with merchants in Travel Cuba app"
+                  alt="Book events and chat with merchants in Discover Cuba app"
                   className="rounded-2xl shadow-soft max-w-sm mx-auto"
                 />
                 <div className="absolute -top-4 -left-4 bg-gradient-sunset text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
@@ -201,7 +201,7 @@ const Index = () => {
               <div className="relative mb-6">
                 <img 
                   src={appPayment} 
-                  alt="Secure payment and booking in Travel Cuba app"
+                  alt="Secure payment and booking in Discover Cuba app"
                   className="rounded-2xl shadow-soft max-w-sm mx-auto"
                 />
                 <div className="absolute -top-4 -left-4 bg-gradient-tropical text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
@@ -268,12 +268,12 @@ const Index = () => {
       <footer className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <h3 className="text-2xl font-display font-bold mb-4">Travel Cuba</h3>
+            <h3 className="text-2xl font-display font-bold mb-4">Discover Cuba</h3>
             <p className="mb-6 opacity-90">
               Connecting travelers and local merchants across beautiful Cuba
             </p>
             <p className="text-sm opacity-75">
-              © {new Date().getFullYear()} Travel Cuba. All rights reserved.
+              © {new Date().getFullYear()} Discover Cuba. All rights reserved.
             </p>
           </div>
         </div>
