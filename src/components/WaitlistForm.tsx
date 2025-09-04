@@ -18,7 +18,7 @@ export const WaitlistForm = () => {
     
     try {
       const { error } = await supabase
-        .from('waitlist')
+        .from('cuba_waitlist')
         .insert([{ email }]);
 
       if (error) {

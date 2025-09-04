@@ -24,7 +24,7 @@ export const ContactForm = () => {
     
     try {
       const { error } = await supabase
-        .from('contacts')
+        .from('cuba_contacts')
         .insert([{
           name: formData.name,
           email: formData.email,
