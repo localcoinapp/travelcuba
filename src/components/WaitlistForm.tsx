@@ -1,32 +1,75 @@
-import { useState } from "react";
+// src/components/WaitlistForm.tsx
+'use client';
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Mail } from "lucide-react";
 
-export const WaitlistForm = () => {
+/**
+ * Uses Vite env var for the site key.
+ * Set VITE_RECAPTCHA_SITE_KEY in your .env (local) or provider.
+ */
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+
+export const WaitlistForm: React.FC = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  // Load the reCAPTCHA script once
+  useEffect(() => {
+    if (!RECAPTCHA_SITE_KEY) {
+      console.warn("VITE_RECAPTCHA_SITE_KEY not set.");
+      return;
+    }
+    if ((window as any).grecaptcha) return;
+
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }, []);
+
+  const runRecaptcha = async (action = "waitlist_submit") => {
+    if (!RECAPTCHA_SITE_KEY) throw new Error("reCAPTCHA site key not configured.");
+    if (!(window as any).grecaptcha) throw new Error("reCAPTCHA not loaded");
+    return new Promise<string>((resolve, reject) => {
+      (window as any).grecaptcha.ready(() => {
+        (window as any).grecaptcha
+          .execute(RECAPTCHA_SITE_KEY, { action })
+          .then((token: string) => resolve(token))
+          .catch((err: any) => reject(err));
+      });
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setIsLoading(true);
-    
-    try {
-      const { error } = await supabase
-        .from('cuba_waitlist')
-        .insert([{ email }]);
 
-      if (error) {
+    try {
+      // Get reCAPTCHA token
+      const token = await runRecaptcha("waitlist_submit");
+
+      // Send token + email to server endpoint that verifies token and inserts into DB
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, recaptcha_token: token }),
+      });
+
+      const body = await res.json();
+
+      if (!res.ok) {
+        console.error("Waitlist submission error:", body);
         toast({
           title: "Error",
-          description: error.message.includes('duplicate') 
-            ? "This email is already on our waitlist!" 
-            : "Something went wrong. Please try again.",
+          description: body?.error || "Failed to join waitlist. Try again.",
           variant: "destructive",
         });
       } else {
@@ -36,15 +79,16 @@ export const WaitlistForm = () => {
         });
         setEmail("");
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Waitlist submission error:", err);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "reCAPTCHA or network error. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -57,8 +101,8 @@ export const WaitlistForm = () => {
           Be the first to discover Cuba's hidden gems
         </p>
       </div>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
+
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -70,12 +114,12 @@ export const WaitlistForm = () => {
             required
           />
         </div>
-        
-        <Button 
-          type="submit" 
-          variant="tropical" 
-          size="lg" 
-          className="w-full" 
+
+        <Button
+          type="submit"
+          variant="tropical"
+          size="lg"
+          className="w-full"
           disabled={isLoading}
         >
           {isLoading ? "Joining..." : "Join Waitlist"}
@@ -84,3 +128,5 @@ export const WaitlistForm = () => {
     </div>
   );
 };
+
+export default WaitlistForm;
