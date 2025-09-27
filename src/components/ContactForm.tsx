@@ -1,4 +1,7 @@
-import { useState } from "react";
+// ContactForm.tsx
+'use client';
+
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,7 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Mail, User, Building2 } from "lucide-react";
 
-export const ContactForm = () => {
+/**
+ * === PUT YOUR SITE KEY HERE ===
+ * Replace the string below with your reCAPTCHA v3 SITE key.
+ * For production, prefer to load this from NEXT_PUBLIC_... env var instead.
+ */
+const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_V3_SITE_KEY_HERE";
+
+export const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,44 +26,98 @@ export const ContactForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  // Load the reCAPTCHA v3 script once
+  useEffect(() => {
+    if (!RECAPTCHA_SITE_KEY) {
+      console.warn("reCAPTCHA site key is not set.");
+      return;
+    }
+    if ((window as any).grecaptcha) return; // already loaded
+
+    const script = document.createElement("script");
+    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // keep script (no need to remove)
+    };
+  }, []);
+
+  const runRecaptcha = async (action = "submit") => {
+    if (!(window as any).grecaptcha) {
+      throw new Error("reCAPTCHA not loaded");
+    }
+    return new Promise<string>((resolve, reject) => {
+      (window as any).grecaptcha.ready(() => {
+        (window as any).grecaptcha
+          .execute(RECAPTCHA_SITE_KEY, { action })
+          .then((token: string) => resolve(token))
+          .catch((err: any) => reject(err));
+      });
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.message) return;
+    if (!formData.name || !formData.email || !formData.message) {
+      toast({
+        title: "Validation",
+        description: "Please fill name, email and message.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
-    
+
     try {
-      const { error } = await supabase
-        .from('cuba_contacts')
-        .insert([{
+      // run reCAPTCHA and get token
+      const token = await runRecaptcha("contact_form");
+
+      // Send data + token to your server API which will verify the token
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          business: formData.business || null,
-          message: formData.message
-        }]);
+          business: formData.business,
+          message: formData.message,
+          recaptcha_token: token
+        }),
+      });
 
-      if (error) {
+      const body = await res.json();
+
+      if (!res.ok) {
+        // server returned an error (includes recaptcha validation failures)
+        console.error("Contact form submission error:", body);
         toast({
           title: "Error",
-          description: "Something went wrong. Please try again.",
+          description: body?.error || "Failed to submit. Try again.",
           variant: "destructive",
         });
       } else {
+        // Optionally also insert into Supabase from frontend (if you want),
+        // but we prefer the server to do the insertion so it's protected.
         toast({
           title: "¡Mensaje Enviado!",
           description: "Te contactaremos pronto sobre oportunidades de colaboración.",
         });
         setFormData({ name: "", email: "", business: "", message: "" });
       }
-    } catch (error) {
+    } catch (err) {
+      console.error("Contact form submission error:", err);
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "reCAPTCHA failed or network error. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -73,7 +137,7 @@ export const ContactForm = () => {
           Conecta tu negocio local con viajeros
         </p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -87,7 +151,7 @@ export const ContactForm = () => {
             required
           />
         </div>
-        
+
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -100,7 +164,7 @@ export const ContactForm = () => {
             required
           />
         </div>
-        
+
         <div className="relative">
           <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -112,7 +176,7 @@ export const ContactForm = () => {
             className="pl-10"
           />
         </div>
-        
+
         <Textarea
           name="message"
           placeholder="Cuéntanos sobre tu negocio y cómo te gustaría colaborar con Travel Cuba..."
@@ -121,12 +185,12 @@ export const ContactForm = () => {
           rows={4}
           required
         />
-        
-        <Button 
-          type="submit" 
-          variant="sunset" 
-          size="lg" 
-          className="w-full" 
+
+        <Button
+          type="submit"
+          variant="sunset"
+          size="lg"
+          className="w-full"
           disabled={isLoading}
         >
           {isLoading ? "Enviando..." : "Enviar Mensaje"}
@@ -135,3 +199,5 @@ export const ContactForm = () => {
     </div>
   );
 };
+
+export default ContactForm;
