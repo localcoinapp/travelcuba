@@ -1,4 +1,4 @@
-// ContactForm.tsx
+// src/components/ContactForm.tsx
 'use client';
 
 import React, { useEffect, useState } from "react";
@@ -6,15 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Mail, User, Building2 } from "lucide-react";
 
 /**
- * === PUT YOUR SITE KEY HERE ===
- * Replace the string below with your reCAPTCHA v3 SITE key.
- * For production, prefer to load this from NEXT_PUBLIC_... env var instead.
+ * Use Vite env var for site key. Set VITE_RECAPTCHA_SITE_KEY in your .env (local)
+ * or in your deployment provider's env settings.
  */
-const RECAPTCHA_SITE_KEY = "YOUR_RECAPTCHA_V3_SITE_KEY_HERE";
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 export const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -26,13 +24,13 @@ export const ContactForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // Load the reCAPTCHA v3 script once
+  // Load the reCAPTCHA script once
   useEffect(() => {
     if (!RECAPTCHA_SITE_KEY) {
-      console.warn("reCAPTCHA site key is not set.");
+      console.warn("VITE_RECAPTCHA_SITE_KEY not set.");
       return;
     }
-    if ((window as any).grecaptcha) return; // already loaded
+    if ((window as any).grecaptcha) return;
 
     const script = document.createElement("script");
     script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
@@ -41,18 +39,17 @@ export const ContactForm: React.FC = () => {
     document.head.appendChild(script);
 
     return () => {
-      // keep script (no need to remove)
+      // leave script loaded (keeps grecaptcha available across navigations)
     };
   }, []);
 
-  const runRecaptcha = async (action = "submit") => {
-    if (!(window as any).grecaptcha) {
-      throw new Error("reCAPTCHA not loaded");
-    }
+  const runRecaptcha = async (action = "contact_form") => {
+    if (!RECAPTCHA_SITE_KEY) throw new Error("reCAPTCHA site key not configured.");
+    if (!(window as any).grecaptcha) throw new Error("reCAPTCHA not loaded");
+
     return new Promise<string>((resolve, reject) => {
       (window as any).grecaptcha.ready(() => {
-        (window as any).grecaptcha
-          .execute(RECAPTCHA_SITE_KEY, { action })
+        (window as any).grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
           .then((token: string) => resolve(token))
           .catch((err: any) => reject(err));
       });
@@ -61,6 +58,7 @@ export const ContactForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!formData.name || !formData.email || !formData.message) {
       toast({
         title: "Validation",
@@ -73,10 +71,10 @@ export const ContactForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // run reCAPTCHA and get token
+      // Get reCAPTCHA token
       const token = await runRecaptcha("contact_form");
 
-      // Send data + token to your server API which will verify the token
+      // Post to server endpoint that verifies the token and handles DB/email
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,7 +90,6 @@ export const ContactForm: React.FC = () => {
       const body = await res.json();
 
       if (!res.ok) {
-        // server returned an error (includes recaptcha validation failures)
         console.error("Contact form submission error:", body);
         toast({
           title: "Error",
@@ -100,8 +97,6 @@ export const ContactForm: React.FC = () => {
           variant: "destructive",
         });
       } else {
-        // Optionally also insert into Supabase from frontend (if you want),
-        // but we prefer the server to do the insertion so it's protected.
         toast({
           title: "¡Mensaje Enviado!",
           description: "Te contactaremos pronto sobre oportunidades de colaboración.",
@@ -138,7 +133,7 @@ export const ContactForm: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <div className="relative">
           <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
