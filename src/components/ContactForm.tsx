@@ -1,18 +1,12 @@
 // src/components/ContactForm.tsx
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, User, Building2 } from "lucide-react";
-
-/**
- * Use Vite env var for site key. Set VITE_RECAPTCHA_SITE_KEY in your .env (local)
- * or in your deployment provider's env settings.
- */
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
 export const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -23,38 +17,6 @@ export const ContactForm: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
-  // Load the reCAPTCHA script once
-  useEffect(() => {
-    if (!RECAPTCHA_SITE_KEY) {
-      console.warn("VITE_RECAPTCHA_SITE_KEY not set.");
-      return;
-    }
-    if ((window as any).grecaptcha) return;
-
-    const script = document.createElement("script");
-    script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-
-    return () => {
-      // leave script loaded (keeps grecaptcha available across navigations)
-    };
-  }, []);
-
-  const runRecaptcha = async (action = "contact_form") => {
-    if (!RECAPTCHA_SITE_KEY) throw new Error("reCAPTCHA site key not configured.");
-    if (!(window as any).grecaptcha) throw new Error("reCAPTCHA not loaded");
-
-    return new Promise<string>((resolve, reject) => {
-      (window as any).grecaptcha.ready(() => {
-        (window as any).grecaptcha.execute(RECAPTCHA_SITE_KEY, { action })
-          .then((token: string) => resolve(token))
-          .catch((err: any) => reject(err));
-      });
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,10 +33,6 @@ export const ContactForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Get reCAPTCHA token
-      const token = await runRecaptcha("contact_form");
-
-      // Post to server endpoint that verifies the token and handles DB/email
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,8 +40,7 @@ export const ContactForm: React.FC = () => {
           name: formData.name,
           email: formData.email,
           business: formData.business,
-          message: formData.message,
-          recaptcha_token: token
+          message: formData.message
         }),
       });
 
@@ -107,7 +64,7 @@ export const ContactForm: React.FC = () => {
       console.error("Contact form submission error:", err);
       toast({
         title: "Error",
-        description: "reCAPTCHA failed or network error. Please try again.",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
     } finally {
