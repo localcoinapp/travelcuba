@@ -1,44 +1,32 @@
-// src/components/WaitlistForm.tsx
-'use client';
-
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Mail } from "lucide-react";
 
-export const WaitlistForm: React.FC = () => {
+export const WaitlistForm = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      toast({
-        title: "Validation",
-        description: "Please enter your email address.",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!email) return;
 
     setIsLoading(true);
-
+    
     try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const { error } = await supabase
+        .from('cuba_waitlist')
+        .insert([{ email }]);
 
-      const body = await res.json();
-
-      if (!res.ok) {
-        console.error("Waitlist submission error:", body);
+      if (error) {
         toast({
           title: "Error",
-          description: body?.error || "Failed to join waitlist. Try again.",
+          description: error.message.includes('duplicate') 
+            ? "This email is already on our waitlist!" 
+            : "Something went wrong. Please try again.",
           variant: "destructive",
         });
       } else {
@@ -48,16 +36,15 @@ export const WaitlistForm: React.FC = () => {
         });
         setEmail("");
       }
-    } catch (err) {
-      console.error("Waitlist submission error:", err);
+    } catch (error) {
       toast({
         title: "Error",
-        description: "Network error. Please try again.",
+        description: "Something went wrong. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -70,8 +57,8 @@ export const WaitlistForm: React.FC = () => {
           Be the first to discover Cuba's hidden gems
         </p>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -83,12 +70,12 @@ export const WaitlistForm: React.FC = () => {
             required
           />
         </div>
-
-        <Button
-          type="submit"
-          variant="tropical"
-          size="lg"
-          className="w-full"
+        
+        <Button 
+          type="submit" 
+          variant="tropical" 
+          size="lg" 
+          className="w-full" 
           disabled={isLoading}
         >
           {isLoading ? "Joining..." : "Join Waitlist"}
@@ -97,5 +84,3 @@ export const WaitlistForm: React.FC = () => {
     </div>
   );
 };
-
-export default WaitlistForm;
