@@ -1,31 +1,62 @@
 // src/components/ContactForm.tsx
 'use client';
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { Mail, User, Building2 } from "lucide-react";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Mail, User, Building2 } from 'lucide-react';
+
+type FormData = {
+  name: string;
+  email: string;
+  business: string;
+  message: string;
+};
+
+const initialState: FormData = {
+  name: '',
+  email: '',
+  business: '',
+  message: '',
+};
 
 export const ContactForm: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    business: "",
-    message: ""
-  });
+  const [formData, setFormData] = useState<FormData>(initialState);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+
+    if (!name || !email || !message) {
       toast({
-        title: "Validation",
-        description: "Please fill name, email and message.",
-        variant: "destructive",
+        title: 'Validation',
+        description: 'Please fill in your name, email and message.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast({
+        title: 'Invalid email',
+        description: 'Please enter a valid email address.',
+        variant: 'destructive',
       });
       return;
     }
@@ -33,61 +64,46 @@ export const ContactForm: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          business: formData.business,
-          message: formData.message
-        }),
-      });
+      const { error } = await supabase.from('cuba_contacts').insert([
+        {
+          name,
+          email,
+          business: formData.business?.trim() || null,
+          message,
+        },
+      ]);
 
-      const body = await res.json();
-
-      if (!res.ok) {
-        console.error("Contact form submission error:", body);
+      if (error) {
+        console.error('Supabase insert error:', error);
         toast({
-          title: "Error",
-          description: body?.error || "Failed to submit. Try again.",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Something went wrong. Please try again.',
+          variant: 'destructive',
         });
       } else {
         toast({
-          title: "¡Mensaje Enviado!",
-          description: "Te contactaremos pronto sobre oportunidades de colaboración.",
+          title: '¡Mensaje Enviado!',
+          description: 'Te contactaremos pronto sobre oportunidades de colaboración.',
         });
-        setFormData({ name: "", email: "", business: "", message: "" });
+        setFormData(initialState);
       }
     } catch (err) {
-      console.error("Contact form submission error:", err);
+      console.error('Unexpected error inserting contact:', err);
       toast({
-        title: "Error",
-        description: "Network error. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
   return (
     <div className="bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border shadow-soft">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-foreground mb-2 font-display">
-          Únete Como Socio
-        </h3>
-        <p className="text-muted-foreground">
-          Conecta tu negocio local con viajeros
-        </p>
+        <h3 className="text-2xl font-bold text-foreground mb-2 font-display">Únete Como Socio</h3>
+        <p className="text-muted-foreground">Conecta tu negocio local con viajeros</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -138,14 +154,8 @@ export const ContactForm: React.FC = () => {
           required
         />
 
-        <Button
-          type="submit"
-          variant="sunset"
-          size="lg"
-          className="w-full"
-          disabled={isLoading}
-        >
-          {isLoading ? "Enviando..." : "Enviar Mensaje"}
+        <Button type="submit" variant="sunset" size="lg" className="w-full" disabled={isLoading}>
+          {isLoading ? 'Enviando...' : 'Enviar Mensaje'}
         </Button>
       </form>
     </div>
